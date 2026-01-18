@@ -1,0 +1,25 @@
+{
+  "MSBuild": {
+    "UseLegacySdkResolver": false,
+    "LoadProjectsOnDemand": false,
+    "EnablePackageAutoRestore": true
+  },
+  "FormattingOptions": {
+    "EnableEditorConfigSupport": true,
+    "OrganizeImports": true
+  },
+  "RoslynExtensionsOptions": {
+    "EnableAnalyzersSupport": true,
+    "EnableImportCompletion": true,
+    "EnableDecompilationSupport": true
+  },
+  "FileOptions": {
+    "SystemExcludeSearchPatterns": [
+      "**/node_modules/**",
+      "**/bin/**",
+      "**/obj/**",
+      "**/.git/**"
+    ]
+  }
+}
+
