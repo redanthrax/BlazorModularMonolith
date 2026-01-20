@@ -1,6 +1,6 @@
 using API.Modules.Boxes.Entities;
 using API.Modules.Boxes.Infrastructure.Persistence;
-using API.Modules.Boxes.IntegrationEvents;
+using IntegrationEvents.Boxes;
 using Common.Application.Models;
 using Common.Presentation.Endpoints;
 using Microsoft.AspNetCore.Builder;

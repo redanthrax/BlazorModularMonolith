@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WolverineFx" Version="5.9.2" />
+    <PackageReference Include="WolverineFx" Version="$(WolverineFxVersion)" />
   </ItemGroup>
 
 </Project>

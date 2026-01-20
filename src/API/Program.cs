@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Wolverine;
-using Wolverine.Postgresql;
+using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,15 +21,17 @@ builder.Services.AddOpenApi();
 
 var connectionString = builder.Configuration.GetConnectionString("Postgres");
 
-builder.Services.AddModules(builder.Configuration);
-
 var boxesAssembly = typeof(API.Modules.Boxes.BoxesModule).Assembly;
 var comicsAssembly = typeof(API.Modules.Comics.ComicsModule).Assembly;
 var authAssembly = typeof(API.Modules.Authentication.AuthenticationModule).Assembly;
+var recommendationsAssembly = typeof(API.Modules.Recommendations.RecommendationsModule).Assembly;
+
+builder.Services.AddModules(builder.Configuration);
 
 builder.Services.AddEndpoints(boxesAssembly);
 builder.Services.AddEndpoints(comicsAssembly);
 builder.Services.AddEndpoints(authAssembly);
+builder.Services.AddEndpoints(recommendationsAssembly);
 
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -49,8 +51,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 builder.Host.UseWolverine(opts => {
-    opts.PersistMessagesWithPostgresql(connectionString!, "wolverine")
-      .EnableMessageTransport();
+    opts.UseRabbitMq("amqp://guest:guest@localhost:5672")
+        .AutoProvision()
+        .BindExchange("integration-events").ToQueue("integration-events");
+
+    opts.PublishAllMessages().ToRabbitExchange("integration-events");
+
+    opts.ListenToRabbitQueue("integration-events");
 
     opts.ConfigureModules();
 });

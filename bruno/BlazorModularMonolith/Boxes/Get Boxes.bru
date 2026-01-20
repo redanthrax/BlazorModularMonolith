@@ -1,0 +1,16 @@
+meta {
+  name: Get Boxes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/boxes
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

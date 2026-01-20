@@ -11,7 +11,7 @@
     <ProjectReference Include="..\..\Common\Common.Application\Common.Application.csproj" />
     <ProjectReference Include="..\..\Common\Common.Infrastructure\Common.Infrastructure.csproj" />
     <ProjectReference Include="..\..\Common\Common.Presentation\Common.Presentation.csproj" />
-    <ProjectReference Include=".\IntegrationEvents\API.Modules.Authentication.IntegrationEvents.csproj" />
+    <ProjectReference Include="..\..\IntegrationEvents\IntegrationEvents.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,8 +22,8 @@
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.2.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
-    <PackageReference Include="WolverineFx" Version="5.9.2" />
-    <PackageReference Include="WolverineFx.Http" Version="5.9.2" />
+    <PackageReference Include="WolverineFx" Version="$(WolverineFxVersion)" />
+    <PackageReference Include="WolverineFx.Http" Version="$(WolverineFxVersion)" />
   </ItemGroup>
 
 </Project>

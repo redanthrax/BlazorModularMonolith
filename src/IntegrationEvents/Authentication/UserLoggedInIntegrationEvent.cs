@@ -1,6 +1,6 @@
 using Common.Application.Messaging;
 
-namespace API.Modules.Authentication.IntegrationEvents;
+namespace IntegrationEvents.Authentication;
 
 public sealed record UserLoggedInIntegrationEvent(
     Guid Id,

@@ -1,4 +1,4 @@
-using API.Modules.Authentication.IntegrationEvents;
+using IntegrationEvents.Authentication;
 using Microsoft.Extensions.Logging;
 
 namespace API.Modules.Comics.Features.Handlers;

@@ -1,7 +1,7 @@
 using API.Modules.Authentication.Entities;
 using API.Modules.Authentication.Infrastructure.Persistence;
 using API.Modules.Authentication.Infrastructure.Services;
-using API.Modules.Authentication.IntegrationEvents;
+using IntegrationEvents.Authentication;
 using Common.Application.Models;
 using Common.Presentation.Contracts;
 using Common.Presentation.Endpoints;

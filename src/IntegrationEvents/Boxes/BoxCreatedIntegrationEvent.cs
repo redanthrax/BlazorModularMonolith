@@ -1,6 +1,6 @@
 using Common.Application.Messaging;
 
-namespace API.Modules.Boxes.IntegrationEvents;
+namespace IntegrationEvents.Boxes;
 
 public sealed record BoxCreatedIntegrationEvent(
     Guid Id,

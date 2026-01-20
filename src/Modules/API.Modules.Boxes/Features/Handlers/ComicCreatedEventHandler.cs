@@ -1,4 +1,4 @@
-using API.Modules.Comics.IntegrationEvents;
+using IntegrationEvents.Comics;
 using Microsoft.Extensions.Logging;
 
 namespace API.Modules.Boxes.Features.Handlers;

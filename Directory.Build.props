@@ -18,6 +18,11 @@
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
     <NoWarn>$(NoWarn);CS0579;NU1608;NU1510;CA1016;CA1002;CA1031;CA2227;CA1861;CA1711;CA1056;CA1054;CA1812;CA1307;CA2254;CS0436;CS8604;CS8602;CS9113;CS8625</NoWarn>
+    
+    <!-- Centralized Package Versions -->
+    <WolverineFxVersion>5.11.0</WolverineFxVersion>
+    <EntityFrameworkCoreVersion>10.0.0</EntityFrameworkCoreVersion>
+    <NpgsqlVersion>10.0.0</NpgsqlVersion>
   </PropertyGroup>
 </Project>
 
