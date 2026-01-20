@@ -11,7 +11,11 @@ namespace API.Modules.Boxes.Features.UpdateBox;
 public class UpdateBoxEndpoint : IEndpoint {
     public void MapEndpoint(IEndpointRouteBuilder app) {
         app.MapPut("/api/boxes/{id}",
-            async (Guid id, [FromBody] UpdateBoxRequest request, BoxesDbContext dbContext) => {
+            async (Guid id, [FromBody] UpdateBoxRequest? request, BoxesDbContext dbContext) => {
+                if (request == null) {
+                    return Results.BadRequest(Result<UpdateBoxResponse>.Failure("Request body is required"));
+                }
+
                 var box = await dbContext.Boxes.FindAsync(id);
                 if (box == null) {
                     return Results.NotFound(Result<UpdateBoxResponse>.Failure("Box not found"));

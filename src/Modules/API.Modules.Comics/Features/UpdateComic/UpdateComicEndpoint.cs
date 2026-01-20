@@ -11,7 +11,11 @@ namespace API.Modules.Comics.Features.UpdateComic;
 public class UpdateComicEndpoint : IEndpoint {
     public void MapEndpoint(IEndpointRouteBuilder app) {
         app.MapPut("/api/comics/{id}",
-            async (Guid id, [FromBody] UpdateComicRequest request, ComicsDbContext dbContext) => {
+            async (Guid id, [FromBody] UpdateComicRequest? request, ComicsDbContext dbContext) => {
+                if (request == null) {
+                    return Results.BadRequest(Result<UpdateComicResponse>.Failure("Request body is required"));
+                }
+
                 var comic = await dbContext.Comics.FindAsync(id);
                 if (comic == null) {
                     return Results.NotFound(Result<UpdateComicResponse>.Failure("Comic not found"));

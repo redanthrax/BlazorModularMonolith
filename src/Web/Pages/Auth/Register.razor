@@ -1,0 +1,107 @@
+@page "/register"
+@using Web.Models
+@using Web.Services
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@attribute [AllowAnonymous]
+
+<PageTitle>Register</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+    <MudPaper Class="pa-8" Elevation="4">
+        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
+            Create Account
+        </MudText>
+        <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-6">
+            Sign up to get started
+        </MudText>
+
+        <EditForm Model="@_model" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <MudTextField @bind-Value="_model.FullName"
+                          Label="Full Name"
+                          Variant="Variant.Outlined"
+                          Required="true"
+                          RequiredError="Full name is required"
+                          Class="mb-4"
+                          HelperText="Enter your full name" />
+
+            <MudTextField @bind-Value="_model.Email"
+                          Label="Email"
+                          Variant="Variant.Outlined"
+                          Required="true"
+                          RequiredError="Email is required"
+                          InputType="InputType.Email"
+                          Class="mb-4"
+                          HelperText="Enter your email address" />
+
+            <MudTextField @bind-Value="_model.Password"
+                          Label="Password"
+                          Variant="Variant.Outlined"
+                          Required="true"
+                          RequiredError="Password is required"
+                          InputType="InputType.Password"
+                          Class="mb-4"
+                          HelperText="Choose a strong password" />
+
+            <MudTextField @bind-Value="_confirmPassword"
+                          Label="Confirm Password"
+                          Variant="Variant.Outlined"
+                          Required="true"
+                          RequiredError="Please confirm your password"
+                          InputType="InputType.Password"
+                          Class="mb-6"
+                          HelperText="Re-enter your password" />
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Size="Size.Large"
+                       Disabled="@_isSubmitting"
+                       Class="mb-4">
+                @if (_isSubmitting) {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    <MudText>Creating account...</MudText>
+                } else {
+                    <MudText>Sign Up</MudText>
+                }
+            </MudButton>
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Already have an account?
+                <MudLink Href="/login" Color="Color.Primary">Sign in</MudLink>
+            </MudText>
+        </EditForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private RegisterRequest _model = new();
+    private string _confirmPassword = string.Empty;
+    private bool _isSubmitting = false;
+
+    private async Task HandleSubmit() {
+        if (_model.Password != _confirmPassword) {
+            Snackbar.Add("Passwords do not match", Severity.Error);
+            return;
+        }
+
+        _isSubmitting = true;
+
+        var result = await AuthService.RegisterAsync(_model);
+
+        if (result?.IsSuccess == true) {
+            Snackbar.Add("Registration successful! Welcome!", Severity.Success);
+            NavigationManager.NavigateTo("/");
+        } else {
+            Snackbar.Add(result?.Error ?? "Registration failed", Severity.Error);
+        }
+
+        _isSubmitting = false;
+    }
+}

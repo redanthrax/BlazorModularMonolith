@@ -14,9 +14,13 @@ namespace API.Modules.Boxes.Features.CreateBox;
 public class CreateBoxEndpoint : IEndpoint {
     public void MapEndpoint(IEndpointRouteBuilder app) {
         app.MapPost("/api/boxes",
-            async ([FromBody] CreateBoxRequest request,
+            async ([FromBody] CreateBoxRequest? request,
                 BoxesDbContext dbContext,
                 IMessageBus messageBus) => {
+                if (request == null) {
+                    return Results.BadRequest(Result<CreateBoxResponse>.Failure("Request body is required"));
+                }
+
                 var box = new Box {
                     Name = request.Name,
                     Location = request.Location,

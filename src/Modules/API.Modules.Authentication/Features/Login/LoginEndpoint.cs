@@ -17,10 +17,14 @@ namespace API.Modules.Authentication.Features.Login;
 public class LoginEndpoint : IEndpoint {
     public void MapEndpoint(IEndpointRouteBuilder app) {
         app.MapPost("/api/auth/login",
-            async ([FromBody] LoginRequest request,
+            async ([FromBody] LoginRequest? request,
                 AuthDbContext dbContext,
                 TokenService tokenService,
                 IMessageBus messageBus) => {
+                if (request == null) {
+                    return Results.BadRequest(Result<LoginResponse>.Failure("Request body is required"));
+                }
+
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
                 if (user == null) {
                     return Results.BadRequest(Result<LoginResponse>.Failure("Invalid email or password"));

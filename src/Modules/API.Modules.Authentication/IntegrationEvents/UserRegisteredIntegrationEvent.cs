@@ -6,9 +6,8 @@ public sealed record UserRegisteredIntegrationEvent(
     Guid Id,
     DateTime OccurredOnUtc,
     Guid UserId,
-    string Email,
-    string FullName) : IIntegrationEvent {
-    public UserRegisteredIntegrationEvent(Guid UserId, string Email, string FullName)
-        : this(Guid.NewGuid(), DateTime.UtcNow, UserId, Email, FullName) {
+    string Email) : IIntegrationEvent {
+    public UserRegisteredIntegrationEvent(Guid UserId, string Email)
+        : this(Guid.NewGuid(), DateTime.UtcNow, UserId, Email) {
     }
 }

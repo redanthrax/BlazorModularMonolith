@@ -12,8 +12,7 @@ public class UserRegisteredEventHandler {
 
     public void Handle(UserRegisteredIntegrationEvent @event) {
         _logger.LogInformation(
-            "User registered: {Email} ({FullName})",
-            @event.Email,
-            @event.FullName);
+            "User registered: {Email}",
+            @event.Email);
     }
 }

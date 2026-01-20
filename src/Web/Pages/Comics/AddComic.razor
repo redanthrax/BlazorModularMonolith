@@ -1,0 +1,163 @@
+@page "/comics/create"
+@using Web.Models
+@using Web.Services
+@inject ComicsService ComicsService
+@inject BoxesService BoxesService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>Add Comic</PageTitle>
+
+<MudText Typo="Typo.h4" GutterBottom="true">Add New Comic</MudText>
+
+<MudPaper Class="pa-4 mt-4" Elevation="2">
+    <EditForm Model="@_model" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        
+        <MudGrid>
+            <MudItem xs="12" md="8">
+                <MudCard>
+                    <MudCardContent>
+                        <MudTextField @bind-Value="_model.Title"
+                                      Label="Title"
+                                      Variant="Variant.Outlined"
+                                      Required="true"
+                                      RequiredError="Title is required"
+                                      Class="mb-4" />
+
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudNumericField @bind-Value="_model.IssueNumber"
+                                                 Label="Issue Number"
+                                                 Variant="Variant.Outlined"
+                                                 Min="0"
+                                                 Required="true"
+                                                 Class="mb-4" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_model.Publisher"
+                                              Label="Publisher"
+                                              Variant="Variant.Outlined"
+                                              Required="true"
+                                              RequiredError="Publisher is required"
+                                              Class="mb-4" />
+                            </MudItem>
+                        </MudGrid>
+
+                        <MudGrid>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="_releaseDate"
+                                               Label="Release Date"
+                                               Variant="Variant.Outlined"
+                                               Class="mb-4" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudNumericField @bind-Value="_model.Price"
+                                                 Label="Price"
+                                                 Variant="Variant.Outlined"
+                                                 Min="0"
+                                                 Step="0.01m"
+                                                 Format="N2"
+                                                 Adornment="Adornment.Start"
+                                                 AdornmentText="$"
+                                                 Class="mb-4" />
+                            </MudItem>
+                        </MudGrid>
+
+                        <MudTextField @bind-Value="_model.CoverImageUrl"
+                                      Label="Cover Image URL"
+                                      Variant="Variant.Outlined"
+                                      Class="mb-4" />
+
+                        <MudSelect @bind-Value="_model.BoxId"
+                                   Label="Storage Box"
+                                   Variant="Variant.Outlined"
+                                   Clearable="true"
+                                   Class="mb-4">
+                            @if (_boxes != null) {
+                                foreach (var box in _boxes) {
+                                    <MudSelectItem Value="@box.Id">
+                                        @box.Name @(box.Location != null ? $"({box.Location})" : "")
+                                    </MudSelectItem>
+                                }
+                            }
+                        </MudSelect>
+
+                        <MudTextField @bind-Value="_model.Description"
+                                      Label="Description"
+                                      Variant="Variant.Outlined"
+                                      Lines="5"
+                                      Class="mb-4" />
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton ButtonType="ButtonType.Submit"
+                                   Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Disabled="@_isSubmitting"
+                                   StartIcon="@Icons.Material.Filled.Save">
+                            @if (_isSubmitting) {
+                                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                                <MudText Class="ml-2">Saving...</MudText>
+                            } else {
+                                <MudText>Save Comic</MudText>
+                            }
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Secondary"
+                                   Href="/comics"
+                                   StartIcon="@Icons.Material.Filled.Cancel">
+                            Cancel
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                @if (!string.IsNullOrWhiteSpace(_model.CoverImageUrl)) {
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Cover Preview</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardMedia Image="@_model.CoverImageUrl" Height="400" />
+                    </MudCard>
+                }
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudPaper>
+
+@code {
+    private CreateComicRequest _model = new();
+    private List<BoxListItemResponse> _boxes = new();
+    private bool _isSubmitting = false;
+    private DateTime? _releaseDate;
+
+    protected override async Task OnInitializedAsync() {
+        await LoadBoxes();
+    }
+
+    private async Task LoadBoxes() {
+        var result = await BoxesService.GetBoxesAsync(1, 100);
+        if (result?.IsSuccess == true) {
+            _boxes = result.Data;
+        }
+    }
+
+    private async Task HandleSubmit() {
+        _isSubmitting = true;
+        _model.ReleaseDate = _releaseDate;
+
+        var result = await ComicsService.CreateComicAsync<object>(_model);
+
+        if (result?.IsSuccess == true) {
+            Snackbar.Add("Comic created successfully!", Severity.Success);
+            NavigationManager.NavigateTo("/comics");
+        } else {
+            Snackbar.Add(result?.Error ?? "Failed to create comic", Severity.Error);
+        }
+
+        _isSubmitting = false;
+    }
+}

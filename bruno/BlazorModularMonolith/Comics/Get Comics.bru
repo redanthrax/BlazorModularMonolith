@@ -1,0 +1,21 @@
+meta {
+  name: Get Comics
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/comics
+  body: none
+  auth: inherit
+}
+
+script:pre-request {
+  const t = bru.getVar("token");
+  console.log(t);
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -18,10 +18,14 @@ namespace API.Modules.Authentication.Features.Register;
 public class RegisterEndpoint : IEndpoint {
     public void MapEndpoint(IEndpointRouteBuilder app) {
         app.MapPost("/api/auth/register",
-            async ([FromBody] RegisterRequest request,
+            async ([FromBody] RegisterRequest? request,
                 AuthDbContext dbContext,
                 TokenService tokenService,
                 IMessageBus messageBus) => {
+                if (request == null) {
+                    return Results.BadRequest(Result<LoginResponse>.Failure("Request body is required"));
+                }
+
                 var existingUser = await dbContext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
                 if (existingUser != null) {
                     return Results.BadRequest(Result<LoginResponse>.Failure("Email already registered"));
@@ -32,8 +36,7 @@ public class RegisterEndpoint : IEndpoint {
 
                 var user = new User {
                     Email = request.Email,
-                    PasswordHash = passwordHash,
-                    FullName = request.FullName
+                    PasswordHash = passwordHash
                 };
 
                 dbContext.Users.Add(user);
@@ -42,7 +45,7 @@ public class RegisterEndpoint : IEndpoint {
                 var token = tokenService.GenerateToken(user);
                 var response = new LoginResponse(token, user.Email, user.Id.ToString());
 
-                var integrationEvent = new UserRegisteredIntegrationEvent(user.Id, user.Email, user.FullName);
+                var integrationEvent = new UserRegisteredIntegrationEvent(user.Id, user.Email);
                 await messageBus.PublishAsync(integrationEvent);
 
                 return Results.Created($"/api/auth/users/{user.Id}", Result<LoginResponse>.Success(response));

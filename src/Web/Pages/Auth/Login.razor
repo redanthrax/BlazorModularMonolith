@@ -1,0 +1,93 @@
+@page "/login"
+@using Web.Models
+@using Web.Services
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+@attribute [AllowAnonymous]
+
+<PageTitle>Login</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+    <MudPaper Class="pa-8" Elevation="4">
+        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
+            Welcome Back
+        </MudText>
+        <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-6">
+            Sign in to your account
+        </MudText>
+
+        <EditForm Model="@_model" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            <MudTextField @bind-Value="_model.Email"
+                          Label="Email"
+                          Variant="Variant.Outlined"
+                          Required="true"
+                          RequiredError="Email is required"
+                          InputType="InputType.Email"
+                          Class="mb-4"
+                          HelperText="Enter your email address" />
+
+            <MudTextField @bind-Value="_model.Password"
+                          Label="Password"
+                          Variant="Variant.Outlined"
+                          Required="true"
+                          RequiredError="Password is required"
+                          InputType="InputType.Password"
+                          Class="mb-6"
+                          HelperText="Enter your password" />
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Size="Size.Large"
+                       Disabled="@_isSubmitting"
+                       Class="mb-4">
+                @if (_isSubmitting) {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    <MudText>Signing in...</MudText>
+                } else {
+                    <MudText>Sign In</MudText>
+                }
+            </MudButton>
+
+            <MudDivider Class="my-4" />
+
+            <MudText Typo="Typo.body2" Align="Align.Center">
+                Don't have an account?
+                <MudLink Href="/register" Color="Color.Primary">Sign up</MudLink>
+            </MudText>
+        </EditForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private LoginRequest _model = new();
+    private bool _isSubmitting = false;
+
+    protected override void OnInitialized() {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query).TryGetValue("returnUrl", out var returnUrl)) {
+            _returnUrl = returnUrl.ToString();
+        }
+    }
+
+    private string _returnUrl = "/";
+
+    private async Task HandleSubmit() {
+        _isSubmitting = true;
+
+        var result = await AuthService.LoginAsync(_model);
+
+        if (result?.IsSuccess == true) {
+            Snackbar.Add("Login successful!", Severity.Success);
+            NavigationManager.NavigateTo(_returnUrl);
+        } else {
+            Snackbar.Add(result?.Error ?? "Login failed", Severity.Error);
+        }
+
+        _isSubmitting = false;
+    }
+}

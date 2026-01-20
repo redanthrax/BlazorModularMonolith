@@ -14,9 +14,13 @@ namespace API.Modules.Comics.Features.CreateComic;
 public class CreateComicEndpoint : IEndpoint {
     public void MapEndpoint(IEndpointRouteBuilder app) {
         app.MapPost("/api/comics",
-            async ([FromBody] CreateComicRequest request,
+            async ([FromBody] CreateComicRequest? request,
                 ComicsDbContext dbContext,
                 IMessageBus messageBus) => {
+                if (request == null) {
+                    return Results.BadRequest(Result<CreateComicResponse>.Failure("Request body is required"));
+                }
+
                 var comic = new Comic {
             Title = request.Title,
             IssueNumber = request.IssueNumber,
